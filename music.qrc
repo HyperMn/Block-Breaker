@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>music/brickCollided.wav</file>
+        <file>music/brickDestroyed.wav</file>
+        <file>music/plankCollided.wav</file>
+        <file>music/gameLose.mp3</file>
+        <file>music/gameWin.mp3</file>
+        <file>music/ballAdded.wav</file>
+        <file>music/background.mp3</file>
+    </qresource>
+</RCC>

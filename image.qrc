@@ -1,0 +1,35 @@
+<RCC>
+    <qresource prefix="/Ball">
+        <file>image/ball/superBall.png</file>
+        <file>image/ball/bigBall.png</file>
+        <file>image/ball/fastBall.png</file>
+        <file>image/ball/normalBall.png</file>
+        <file>image/ball/slowBall.png</file>
+        <file>image/ball/smallBall.png</file>
+    </qresource>
+    <qresource prefix="/plank">
+        <file>image/plank/fastPlank.png</file>
+        <file>image/plank/longerPlank.png</file>
+        <file>image/plank/normalPlank.png</file>
+        <file>image/plank/shorterPlank.png</file>
+        <file>image/plank/slowPlank.png</file>
+    </qresource>
+    <qresource prefix="/brick"/>
+    <qresource prefix="/gift">
+        <file>image/gift/acceleratePlankBGift.png</file>
+        <file>image/gift/addBallGift.png</file>
+        <file>image/gift/deceleratePlankGift.png</file>
+        <file>image/gift/shrinkPlankGift.png</file>
+        <file>image/gift/stretchPlankGift.png</file>
+        <file>image/gift/heart.jpg</file>
+        <file>image/gift/s.jpg</file>
+    </qresource>
+    <qresource prefix="/background">
+        <file>image/background/cr7.jpg</file>
+        <file>image/background/background.png</file>
+    </qresource>
+    <qresource prefix="/icon">
+        <file>icon.ico</file>
+        <file>image/icon/backgroundControler.png</file>
+    </qresource>
+</RCC>
