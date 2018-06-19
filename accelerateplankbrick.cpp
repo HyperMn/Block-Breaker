@@ -2,7 +2,7 @@
 #include<QGraphicsScene>
 
 AcceleratePlankBrick::AcceleratePlankBrick(QGraphicsItem* parent):
-  AbstractSurprisingBrick(1,QColor(100,100,50,100),parent)
+  AbstractSurprisingBrick(1,QColor(0,191,255,100),parent)
 {
 
 }

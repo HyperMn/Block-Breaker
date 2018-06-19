@@ -2,7 +2,7 @@
 #include<QGraphicsScene>
 
 AddBallBrick::AddBallBrick(QGraphicsItem* parent):
-  AbstractSurprisingBrick(1,QColor(0,250,50,100),parent)
+  AbstractSurprisingBrick(1,QColor(0,74,128,200),parent)
 {
 
 }

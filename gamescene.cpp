@@ -14,22 +14,25 @@
 #include<QTime>
 #include<QMediaPlayer>
 
-
+//构造函数列表初始化
 GameScene::GameScene(QObject* parent):
   QGraphicsScene(parent),
   plank(nullptr),
+  //音乐音效
   brickCollidedPlayer(new QMediaPlayer(this)),
   brickDestroyedPlayer(new QMediaPlayer(this)),
   ballAddedPlayer(new QMediaPlayer(this)),
   plankCollidedPlayer(new QMediaPlayer(this)),
+  //球的数量,砖的数量
   ballAmount(0),
   brickAmount(0),
+  //游戏状态
   gameState(ready)
 {
   qsrand(QTime::currentTime().msecsSinceStartOfDay());
   this->setSceneRect(0,0,550,500);
   this->initBorder();
-
+  //设置音乐
   brickCollidedPlayer->setMedia(QUrl("qrc:/music/brickCollided.wav"));
   brickDestroyedPlayer->setMedia(QUrl("qrc:/music/brickDestroyed.wav"));
   ballAddedPlayer->setMedia(QUrl("qrc:/music/ballAdded.wav"));
@@ -139,6 +142,7 @@ void GameScene::selectGameLevel(int level)
       }
     }
   }
+  //初始状态设置球和板子
   auto ball=BallFactory::constructNormalBall();
   ball->stopMoving();
   this->addBall(ball,QPoint(255,460));
@@ -164,6 +168,7 @@ void GameScene::selectGameLevel(int level)
 //  }
 //}
 
+//键盘动作控制板子的移动
 void GameScene::keyPressEvent(QKeyEvent* e)
 {
   switch (e->key()) {
@@ -183,6 +188,7 @@ void GameScene::keyPressEvent(QKeyEvent* e)
         e->accept();
       }
     break;
+    //使用空格游戏暂停
     case Qt::Key_Space:
       if(this->gameState==ready||this->gameState==pause)
       {
@@ -206,7 +212,7 @@ void GameScene::keyPressEvent(QKeyEvent* e)
     break;
   }
 }
-
+//键盘事件
 void GameScene::keyReleaseEvent(QKeyEvent* e)
 {
   switch (e->key())
@@ -232,11 +238,13 @@ void GameScene::keyReleaseEvent(QKeyEvent* e)
     break;
   }
 }
-
+//设置礼物
 void GameScene::randSetGift()
 {
+  //x是浮点类型
 	qreal x=qrand()%500;
 	Gift *gift;
+  //switch选择出现什么样的礼物
 	switch(qrand()%10)
 	{
 		case 1:
@@ -254,10 +262,14 @@ void GameScene::randSetGift()
 
 void GameScene::ballCollided(QList<QGraphicsItem*> items, AbstractBall* ball)
 {
+  //球的撞击
+  //撞击的循环
   for(auto& i:items)
   {
+    //指针类型转换
     if(dynamic_cast<AbstractPlank*>(i))
     {
+      //播放音效
       plankCollidedPlayer->play();
       static_cast<AbstractPlank*>(i)->collidingWithBall(ball);
     }
@@ -275,6 +287,7 @@ void GameScene::ballCollided(QList<QGraphicsItem*> items, AbstractBall* ball)
 
 void GameScene::giftCollided(QList<QGraphicsItem*> items, Gift* gift)
 {
+  //撞击到礼物
   for(auto& i:items)
   {
     if(dynamic_cast<AbstractPlank*>(i))
@@ -290,7 +303,7 @@ void GameScene::giftCollided(QList<QGraphicsItem*> items, Gift* gift)
     }
   }
 }
-
+//坐标,角度
 void GameScene::offsetBall(qreal xOff, qreal yOff, QGraphicsItem* ball)
 {
   static_cast<AbstractBall*>(ball)->offsetAngle(xOff,yOff);
@@ -298,18 +311,26 @@ void GameScene::offsetBall(qreal xOff, qreal yOff, QGraphicsItem* ball)
 
 void GameScene::monitorBall(AbstractBall* ball)
 {
+  //连接信号和槽
+  //球没了
   this->connect(ball,SIGNAL(destroyed(QObject*)),this,SLOT(ballDestroyed()));
+  //撞击到物体
   connect(ball,SIGNAL(collidingWithItem(QList<QGraphicsItem*>,AbstractBall*)),\
           this,SLOT(ballCollided(QList<QGraphicsItem*>,AbstractBall*)));
+  //游戏开始
   connect(this,SIGNAL(gameContinue()),ball,SLOT(startToMove()));
+  //游戏暂停
   connect(this,SIGNAL(gamePause()),ball,SLOT(stopMoving()));
 }
 
 void GameScene::monitorBrick(AbstractBrick* brick)
 {
+  //连接信号和槽
+  //撞到砖块
   this->connect(brick,SIGNAL(destroyed(QObject*)),this,SLOT(brickDestroyed()));
   if(dynamic_cast<AbstractSurprisingBrick*>(brick))
   {
+    //撞到有奖品的砖块
     this->connect(static_cast<AbstractSurprisingBrick*>(brick),SIGNAL(awardSent(Gift*)),\
                   this,SLOT(monitorGift(Gift*)));
   }
@@ -317,6 +338,7 @@ void GameScene::monitorBrick(AbstractBrick* brick)
 
 void GameScene::monitorPlank(AbstractPlank* plank)
 {
+  //板子上球的位置
   connect(plank,SIGNAL(setOffset(qreal,qreal,QGraphicsItem*)),\
           this,SLOT(offsetBall(qreal,qreal,QGraphicsItem*)));
   connect(this,SIGNAL(gameContinue()),plank,SLOT(startToMove()));
@@ -325,28 +347,38 @@ void GameScene::monitorPlank(AbstractPlank* plank)
 
 void GameScene::monitorGift(Gift* gift)
 {
+  //撞到有奖品的板子
   this->connect(gift,SIGNAL(collidingWithItem(QList<QGraphicsItem*>,Gift*)),\
                 this,SLOT(giftCollided(QList<QGraphicsItem*>,Gift*)));
   connect(this,SIGNAL(gameContinue()),gift,SLOT(startToMove()));
   connect(this,SIGNAL(gamePause()),gift,SLOT(stopMoving()));
 }
 
+//球没了
 void GameScene::ballDestroyed()
 {
+  //球的数量减少
   ballAmount--;
+  //数量为0,游戏失败
   if(ballAmount==0)
   {
     emit this->gameLose();
   }
 }
 
+//砖块被击碎
 void GameScene::brickDestroyed()
 {
+  //播放音效
   brickDestroyedPlayer->play();
+  //砖块的数量减少
   brickAmount--;
+  //分数加100
   emit upScore(100);
+  //砖的数量为0
   if(brickAmount==0)
   {
+    //游戏胜利的信号
     emit this->gameWin();
   }
 }
@@ -380,6 +412,7 @@ void GameScene::analysisGift(Gift* gift)
 {
   switch (gift->information())
   {
+    //QpointF类,可以用浮点的精度表示点的坐标
     case Gift::addOneNormalBall:
       addBall(BallFactory::constructNormalBall(),gift->pos()-QPointF{0,plank->boundingRect().height()});
     break;
@@ -387,6 +420,7 @@ void GameScene::analysisGift(Gift* gift)
       addBall(BallFactory::constructNormalBall(),gift->pos()-QPointF{0,plank->boundingRect().height()});
       addBall(BallFactory::constructNormalBall(),gift->pos()-QPointF{0,plank->boundingRect().height()});
     break;
+    //增加三个球
     case Gift::addThreeNormalBall:
       addBall(BallFactory::constructNormalBall(),gift->pos()-QPointF{0,plank->boundingRect().height()});
       addBall(BallFactory::constructNormalBall(),gift->pos()-QPointF{0,plank->boundingRect().height()});
@@ -407,6 +441,7 @@ void GameScene::analysisGift(Gift* gift)
     case Gift::addOneSuperBall:
       addBall(BallFactory::constructSuperBall(),gift->pos()-QPointF{0,plank->boundingRect().height()});
     break;
+    //对板子进行改变
     case Gift::shrinkPlank:
       this->convertPlank(PlankFactory::constructShorterPlank());
     break;
@@ -425,6 +460,7 @@ void GameScene::analysisGift(Gift* gift)
   }
 }
 
+//增加球
 void GameScene::addBall(AbstractBall* ball, QPointF pos)
 {
   static int i=0;
@@ -435,7 +471,7 @@ void GameScene::addBall(AbstractBall* ball, QPointF pos)
   this->monitorBall(ball);
   this->ballAmount++;
 }
-
+//增加砖块
 void GameScene::addBrick(AbstractBrick* brick, QPointF pos)
 {
   this->addItem(brick);
@@ -443,7 +479,7 @@ void GameScene::addBrick(AbstractBrick* brick, QPointF pos)
   this->brickAmount++;
   this->monitorBrick(brick);
 }
-
+//转换板子
 void GameScene::convertPlank(AbstractPlank* newPlank)
 {
   this->addItem(newPlank);

@@ -2,7 +2,7 @@
 #include<QGraphicsScene>
 
 StretchPlankBrick::StretchPlankBrick(QGraphicsItem* parent):
-  AbstractSurprisingBrick(1,QColor(0,100,50,100),parent)
+  AbstractSurprisingBrick(1,QColor(0,100,50,200),parent)
 {
 
 }

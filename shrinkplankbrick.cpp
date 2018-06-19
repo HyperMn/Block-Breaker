@@ -2,7 +2,7 @@
 #include<QGraphicsScene>
 
 ShrinkPlankBrick::ShrinkPlankBrick(QGraphicsItem* parent):
-  AbstractSurprisingBrick(1,QColor(200,50,50,100),parent)
+  AbstractSurprisingBrick(1,QColor(200,50,50,200),parent)
 {
 
 }

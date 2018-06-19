@@ -14,12 +14,12 @@ AbstractBrick::~AbstractBrick()
 
 }
 
-QRectF AbstractBrick::boundingRect() const
+QRectF AbstractBrick::boundingRect() const  //碰撞体积
 {
   return QRectF(-20,-15,40,30);
 }
 
-QPainterPath AbstractBrick::shape() const
+QPainterPath AbstractBrick::shape() const   //形状
 {
   QPainterPath path;
   path.addRect(this->boundingRect());
